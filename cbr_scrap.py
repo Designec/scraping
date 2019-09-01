@@ -1,11 +1,14 @@
 from bs4 import BeautifulSoup
-import requests
 from datetime import datetime, timedelta
+import requests
+import csv
 
 headers = {'accept': '*/*',
            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                          'Chrome/76.0.3809.100 Safari/537.36 OPR/63.0.3368.53'}
-base_url = 'https://www.cbr.ru/currency_base/daily/?date_req=31.08.2019'
+
+url_date = datetime.now().strftime('%d.%m.%Y')
+base_url = 'https://www.cbr.ru/currency_base/daily/?date_req=' + url_date
 
 
 def cbr_scrap(base_url, headers):
@@ -17,19 +20,21 @@ def cbr_scrap(base_url, headers):
     if request.status_code == 200:
         print('All OK')
         print('----------------')
-        count = 0  # просто счетчик для тестирования
-        date = '31.08.2019'
-        for i in range(50):
+        # count = 0  # для теста
+        date = url_date
+        for i in range(30):  # для примера собираем данные за последние 30 дней
             url = f'https://www.cbr.ru/currency_base/daily/?date_req={date}'
-            # берем дату, разбиваем, вычитаем один день и вставляем в URL
-            day = date.split('.')
-            convert_day = datetime(int(day[2]), int(day[1]), int(day[0]))
-            delta_day = convert_day - timedelta(days=1)
-            date = delta_day.strftime('%d.%m.%Y')
-            count += 1  # все тот же стчетчик для тестирования
+            # берем дату, разбиваем, придаем вид [31, 8, 2019], вычитаем один день и вставляем в URL
+            split_date = date.split('.')
+            convert_date = datetime(int(split_date[2]), int(split_date[1]), int(split_date[0]))
+            delta_date = convert_date - timedelta(days=1)
+            date = delta_date.strftime('%d.%m.%Y')
+            # count += 1
             print(count)
             if url not in urls:
                 urls.append(url)  # добавляем URL, которых еще нет в списке
+    else:
+        print('Status code: ' + str(request.status_code))  # если страница отдаст не 200 код
 
     for url in urls:
         # перебираем URL и вытаскиваем данные
@@ -45,12 +50,29 @@ def cbr_scrap(base_url, headers):
                     'Unit': cells[2].text,
                     'Currency': cells[3].text,
                     'Rate': cells[4].text,
-                    'Day': url[-10:]
+                    'Date': url[-10:]
                 })
             except:
                 pass
-    else:
-        print('Status code: ' + str(request.status_code))  # если страница отдаст не 200 код
+    return currency_list
 
 
-cbr_scrap(base_url, headers)  # работаем, братья!
+def save_to_file(currency_list):
+    # сохраняем все в csv файл
+    with open('currency_db.csv', 'w', newline='', encoding='utf-8') as f:
+        data_temp = csv.writer(f)
+        data_temp.writerow(('Цифровой код', 'Буквенный код', 'Единица',
+                            'Валюта', 'Курс', 'Дата'))
+        for curr in currency_list:
+            data_temp.writerow((curr['Digital code'],
+                                curr['Letter code'],
+                                curr['Unit'],
+                                curr['Currency'],
+                                curr['Rate'],
+                                curr['Date']
+                                ))
+
+
+# работаем, братья!
+currency_list = cbr_scrap(base_url, headers)
+save_to_file(currency_list)
