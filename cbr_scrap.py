@@ -1,3 +1,5 @@
+# Парсим сайт центробанка РФ и получаем курсы валют за указанное время (по умолчанию последние 30 дней)
+# полученные данные сохраняем в csv файл
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import requests
@@ -9,18 +11,18 @@ headers = {'accept': '*/*',
 
 url_date = datetime.now().strftime('%d.%m.%Y')
 base_url = 'https://www.cbr.ru/currency_base/daily/?date_req=' + url_date
+currency_list = []
+urls = []  # здесь будет список URL по дням
 
 
 def cbr_scrap(base_url, headers):
-    currency_list = []
-    urls = []  # здесь будет список URL по дням
     urls.append(base_url)  # сразу же добавим в список базовый URL
     session = requests.Session()
     request = session.get(base_url, headers=headers)
     if request.status_code == 200:
         print('All OK')
         print('----------------')
-        # count = 0  # для теста
+        count = 0  # будем считать дни
         date = url_date
         for i in range(30):  # для примера собираем данные за последние 30 дней
             url = f'https://www.cbr.ru/currency_base/daily/?date_req={date}'
@@ -29,7 +31,7 @@ def cbr_scrap(base_url, headers):
             convert_date = datetime(int(split_date[2]), int(split_date[1]), int(split_date[0]))
             delta_date = convert_date - timedelta(days=1)
             date = delta_date.strftime('%d.%m.%Y')
-            # count += 1
+            count += 1
             print(count)
             if url not in urls:
                 urls.append(url)  # добавляем URL, которых еще нет в списке
@@ -76,3 +78,7 @@ def save_to_file(currency_list):
 # работаем, братья!
 currency_list = cbr_scrap(base_url, headers)
 save_to_file(currency_list)
+
+print('Полученные данные сохранены в currency_db.csv')
+print('----------------')
+print('The End')
