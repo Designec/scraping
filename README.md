@@ -1,6 +1,7 @@
-# scraping
-h2 learning bs4 and other tools
-===========================
+scraping
+====================
+
+### learning bs4 and other tools
 
 [cbr_scrap.py](https://github.com/Designec/scraping/blob/master/cbr_scrap.py) - Парсим сайт центробанка РФ, получаем курсы валют за указанное время (по умолчанию последние 30 дней), полученные данные сохраняем в csv файл
 
