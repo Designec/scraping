@@ -6,10 +6,10 @@ import requests
 token = '05ebb9ea05ebb9ea05ebb9ea9205871aca005eb05ebb9ea5880d0b76f8aed411b4c100b'
 version = 5.101
 count = 5000  # за раз vk отдает не больше 5000 друзей
-offset = 0  # смещение
+offset = 0
 user_domain = ['idesignec']  # короткое имя нужног овам человека
-user_id = []  # id пользователя
-friends = []  # сюда будем скидывать найденные id друзей
+user_id = []
+friends = []
 
 # если задано короткое имя пользователя user_domain и пустой user_id, то сначала посылается запрос,
 # чтобы получить id пользователя по этому имени
@@ -38,9 +38,9 @@ while offset < count_friends:
                                 'count': count,
                                 'offset': offset
                             })
-    data_friends = response.json()['response']['items']  # получаем id 5000 друзей
-    friends.extend(data_friends)  # расширяем список путем добавления новых данных
-    offset += 5000  # смещаем
+    data_friends = response.json()['response']['items']
+    friends.extend(data_friends)
+    offset += 5000
 
 
 # все посчитали, теперь надо бы это сохранить в файл
