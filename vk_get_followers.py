@@ -6,10 +6,10 @@ import requests
 token = '05ebb9ea05ebb9ea05ebb9ea9205871aca005eb05ebb9ea5880d0b76f8aed411b4c100b'
 version = 5.101
 count = 1000  # за раз vk отдает не больше 1000 подписчиков
-offset = 0  # смещение
+offset = 0
 user_domain = ['idesignec']  # короткое имя
 user_id = ['406774428']  # id пользователя
-followers = []  # сюда будем скидывать найденные id подписчиков
+followers = []
 
 # если задано короткое имя пользователя user_domain и пустой user_id, то сначала посылается запрос,
 # чтобы получить id пользователя по этому имени
@@ -38,12 +38,9 @@ while offset < count_followers:
                                 'count': count,
                                 'offset': offset
                             })
-    data_followers = response.json()['response']['items']  # получаем id 1000 подписчиков
-    followers.extend(data_followers)  # расширяем список путем добавления новых данных
-    offset += 1000  # смещаем
-
-    if offset % 10000 == 0:  # при тесте чтобы примерно понимать идет ли процесс
-        print(offset)
+    data_followers = response.json()['response']['items']
+    followers.extend(data_followers)
+    offset += 1000
 
 
 # все посчитали, теперь надо бы это сохранить в файл
