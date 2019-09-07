@@ -12,7 +12,7 @@ headers = {'accept': '*/*',
 url_date = datetime.now().strftime('%d.%m.%Y')
 base_url = 'https://www.cbr.ru/currency_base/daily/?date_req=' + url_date
 currency_list = []
-urls = []  # здесь будет список URL по дням
+urls = []
 
 
 def cbr_scrap(base_url, headers):
@@ -22,7 +22,7 @@ def cbr_scrap(base_url, headers):
     if request.status_code == 200:
         print('All OK')
         print('----------------')
-        count = 0  # будем считать дни
+        count = 0
         date = url_date
         for i in range(30):  # для примера собираем данные за последние 30 дней
             url = f'https://www.cbr.ru/currency_base/daily/?date_req={date}'
@@ -34,12 +34,11 @@ def cbr_scrap(base_url, headers):
             count += 1
             print(count)
             if url not in urls:
-                urls.append(url)  # добавляем URL, которых еще нет в списке
+                urls.append(url)
     else:
-        print('Status code: ' + str(request.status_code))  # если страница отдаст не 200 код
+        print('Status code: ' + str(request.status_code))
 
     for url in urls:
-        # перебираем URL и вытаскиваем данные
         request = session.get(url, headers=headers)
         soup = BeautifulSoup(request.content, 'lxml')
         rows = soup.find_all('tr')
@@ -59,8 +58,8 @@ def cbr_scrap(base_url, headers):
     return currency_list
 
 
+# сохраняем все в csv файл
 def save_to_file(currency_list):
-    # сохраняем все в csv файл
     with open('currency_db.csv', 'w', newline='', encoding='utf-8') as f:
         data_temp = csv.writer(f)
         data_temp.writerow(('Цифровой код', 'Буквенный код', 'Единица',
