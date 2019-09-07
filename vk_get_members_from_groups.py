@@ -3,15 +3,15 @@
 import requests
 
 groups = ['python_community', 'we_use_django']  # можно прописать одну или несколько групп
-users = []  # сюда будем скидывать найденные id юзеров
-users_double = []  # а это для дублей на всякий случай
+users = []
+users_double = []
 
 for group in groups:
     # token берется в настройках приложения API vk, вам нужно получить свой токен
     token = '05ebb9ea05ebb9ea05ebb9ea9205871aca005eb05ebb9ea5880d0b76f8aed411b4c100b'
-    version = 5.101  # последняя актуальная версия API vk
+    version = 5.101
     count = 1000  # за раз vk отдает не больше 1000 юзеров
-    offset = 0  # смещение
+    offset = 0
 
     # узнаем для начала количество участников сообщества
     response = requests.get('https://api.vk.com/method/groups.getMembers',
@@ -34,8 +34,8 @@ for group in groups:
             if data not in users:
                 users.append(data)
             else:
-                users_double.append(data)  # скидываем сюда дубли... на всякий случай
-        offset += 1000  # смещаем
+                users_double.append(data)
+        offset += 1000
 
 all_double = len(users_double)  # посчитаем сколько всего дублей
 users_double = set(users_double)  # а теперь удалим дубли дублей
